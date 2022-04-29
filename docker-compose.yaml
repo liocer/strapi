@@ -1,0 +1,51 @@
+version: '3.7'
+
+services:
+
+  strapi:
+    build: ./strapi/.
+    volumes:
+      - ${BASE_PATH}/app:/opt/app/
+    env_file: .env
+    # ports:
+    #   - 1337:1337
+    labels:
+      - traefik.frontend.rule=Host:strapi.ionos.izit.org
+      - traefik.enable=true
+    restart: unless-stopped
+    depends_on:
+      - strapi-db
+    networks:
+        - traefik
+
+  strapi-db:
+    image: mariadb
+    volumes:
+      - "${BASE_PATH}/db/:/var/lib/mysql"
+    env_file: .env
+    restart: unless-stopped
+    networks:
+      - traefik
+
+  mailhog:
+    image: mailhog/mailhog
+    env_file: .env
+    labels:
+      - traefik.frontend.rule=Host:mailhog.ionos.izit.org
+      - traefik.enable=true
+    restart: unless-stopped
+    networks:
+      - traefik
+
+  # adminer:
+  #   image: adminer
+  #   restart: always
+  #   ports:
+  #     - 1337:8080
+  #   networks:
+  #     - traefik
+
+
+networks:
+  traefik:
+    name: traefik
