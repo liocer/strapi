@@ -11,25 +11,29 @@ services:
     #   - 1337:1337
     labels:
       - traefik.frontend.rule=Host:strapi.ionos.izit.org
+      - traefik.frontend.headers.customResponseHeaders=Access-Control-Allow-Origin:*
       - traefik.enable=true
     restart: unless-stopped
-    depends_on:
-      - strapi-db
+    # depends_on:
+    #   - strapi-db
     networks:
         - traefik
 
-  strapi-db:
-    image: mariadb
-    volumes:
-      - "${BASE_PATH}/db/:/var/lib/mysql"
-    env_file: .env
-    restart: unless-stopped
-    networks:
-      - traefik
+  # strapi-db:
+  #   image: mariadb
+  #   volumes:
+  #     - "${BASE_PATH}/db/:/var/lib/mysql"
+  #   env_file: .env
+  #   restart: unless-stopped
+  #   networks:
+  #     - traefik
 
   mailhog:
     image: mailhog/mailhog
     env_file: .env
+    ports:
+      - 8025:8025
+      - 1025:1025
     labels:
       - traefik.frontend.rule=Host:mailhog.ionos.izit.org
       - traefik.enable=true
